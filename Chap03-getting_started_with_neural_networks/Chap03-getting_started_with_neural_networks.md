@@ -1,10 +1,10 @@
-# Chap03- 신경망 시작하기
+# Chap03 - 신경망 시작하기
 
 ## 3.1 신경망의 구조
 
 신경망 훈련에는 다음 요소들이 관련되어 있다.
 
-* **네트워크(또는 모델)**를 구성하는 **층**
+* **네트워크**(**또는 모델**)를 구성하는 **층**
 * **입력 데이터**와 그에 상응하는 **타깃**
 * 학습에 사용할 피드백 신호를 정의하는 **손실 함수**
 * 학습 진행 방식을 결정하는 **옵티마이저**
@@ -15,14 +15,12 @@
 
 ### 3.1.1 층: 딥러닝의 구성 단위
 
----
-
-* **층(Layer)**은 하나 이상의 텐서를 입력으로 받아 하나 이상의 텐서를 출력하는 데이터 처리 모듈이다.
+* **층**(**Layer**)은 하나 이상의 텐서를 입력으로 받아 하나 이상의 텐서를 출력하는 데이터 처리 모듈이다.
 * 대부분의 층은 **가중치**라는 상태를 가진다.  
   가중치란 확률적 경사 하강법에 의해 학습되는 하나 이상의 텐서이며, 네트워크가 학습한 **지식**이 담겨 있다.
 * 층마다 적절한 텐서 포맷과 데이터 처리 방식이 다르다.
-  * 2D 텐서$$(samples, features)$$의 벡터 데이터 → **완전 연결 층**(*fully connected layer*) 혹은 **밀집 층**(*dense layer*)
-  * 3D 텐서$$(samples, timesteps, features)$$의 시퀀스 데이터 → **순환 층**(*recurrent layer*) ex) **LSTM**
+  * 2D 텐서($$samples, features$$)의 벡터 데이터 → **완전 연결 층**(*fully connected layer*) 혹은 **밀집 층**(*dense layer*)
+  * 3D 텐서($$samples, timesteps, features$$)의 시퀀스 데이터 → **순환 층**(*recurrent layer*) ex) **LSTM**
   * 4D 텐서의 이미지 데이터 → 2D **합성곱 층**(*convolution layer*)
 * 케라스에서는 호환 가능한 층들을 엮어 데이터 변환 파이프라인을 구성함으로써 딥러닝 모델을 만든다.
   * **층 호환성** = 각 층이 특정 크기의 입력 텐서만 받고 특정 크기의 출력 텐서를 반환한다.
@@ -42,19 +40,28 @@ model.add(layers.Dense(10))
 
 ### 3.1.2 모델: 층의 네트워크
 
----
+* 딥러닝 모델은 층으로 만든 유향 비순환 그래프(*Directed Acyclic Graph, DAG*)이다.  
+  유향 비순환 그래프는 edge에 방향이 있고 한 node에서 다시 자기 자신으로 돌아올 경로가 없는 그래프이다.
 
-* 딥러닝 모델은 층으로 만든 비순환 유향 그래프(*Directed Acyclic Graph, DAG*)이다.  
-  비순환 유향 그래프는 edge에 방향이 있고 한 node에서 다시 자기 자신으로 돌아올 경로가 없는 그래프이다.
+![DAG](./images/dag.png)
+
 * 네트워크 구조는 **가설 공간**(*hypothesis space*)을 정의한다.
 * 네트워크 구조를 선택함으로써 **가능성 있는 공간**(가설 공간)을 입력 데이터에서 출력 데이터로 매핑하는 일련의 특정 텐서 연산으로 제한하게 된다.
 * 이를 통해서 찾아야 하는 것은 이런 텐서 연산에 포함된 가중치 텐서의 좋은 값이다.
 
+> ### 가설 공간(Hypothesis space)
+>
+> * One way to control the capacity of a learning algorithm is by choosing its **hypothesis space**, the set of functions that the learning algorithm is allowed to select as being the solution. - *Deep Learning Book, p.112, Ian Goodfellow*
+> * Machine Learning 문제 정의를 위해 필요한 것
+>   * 가능한 인스턴스(도메인) 집합: $$X$$
+>   * 레이블 집합: $$Y$$
+>   * 어떤(모르는) 타겟 함수: $$y = f(x)$$ where $$y ∈ Y$$ , so that for any $$x ∈ X$$, $$f: X→Y$$
+>   * 타겟 함수들의 집합(가설 공간): $$H⊂\left\{h|h:X→Y\right\}$$
+> * 예) Linear Regression 알고리즘에서는 가설 공간으로 모든 선형 함수의 집합을 갖는다.
+
 <br />
 
 ### 3.1.3 손실 함수와 옵티마이저: 학습 과정을 조절하는 열쇠
-
----
 
 * 네트워크 구조를 정의하고 나면 두 가지를 더 선택해야 한다.
   * **손실 함수**(*loss function*)(**목적 함수**(*objective function*)): 훈련하는 동한 최소화 될 값, 주어진 문제에 대한 성공 지표
@@ -70,7 +77,51 @@ model.add(layers.Dense(10))
     3. 회귀 문제 → 평균 제곱 오차
     4. 시퀀스 학습 문제 → CTC(*Connection Temporal Classification*)
 
+> ### Cross entropy
+>
+> * 정보 이론에서 두 확률 분포 $$P$$와 $$Q$$의 차이를 계산하는데에는 크로스 엔트로피(cross entropy)라는 함수가 사용된다.
+>
+> * 여기에서 $$P$$는 현재 가지고 있는 데이터의 분포이고, $$Q$$는 모델이 예측한 결과의 분포를 사용하자.
+>
+> * 크로스 엔트로피 $$H(P,Q)$$의 식은 다음과 같다.
+>   $$
+>   H(P,Q)=−E_{X∼P}\left[logQ(x)\right]=−\sum_xP(x)logQ(x)
+>   $$
+>
+> * 딥러닝에서는 손실 함수를 위와 같은 **음의 로그우도**(**negative log-likelihood**)를 사용함으로써 만드려는 모델에 다양한 확률분포를 가정할 수 있어 유연하게 대응할 수 있게 된다.
+>
+> 참조: *Deep Learning Book p.72~75* / [정보이론 기초](https://ratsgo.github.io/statistics/2017/09/22/information/) / [딥러닝 모델의 손실함수](https://ratsgo.github.io/deep%20learning/2017/09/24/loss/)
+
+> ### CTC(Connection/Connectionist Temporal Classification)
+>
+> ![How CTC collapsing works](./images/ctc_speech_recognition.gif)
+>
+> * CTC는 시간이 변경되는 시퀀스 문제에서 쓰이는 LSTM(Long Short term memory)과 같은 RNN(Recurrent Neural Networks)를 학습시킬 때 사용하는 score function으로, 신경망의 출력에 대한 점수를 알려준다.  
+>
+> * CTC를 사용하면 **forced alignment**될 필요가 없다. (학습시킬 입력 데이터에서 각 시퀀스에 해당되는 출력 값이 매핑되지 않아도 된다.)
+> * 학습 자료로부터 $$n$$개의 라벨이 주어졌을 때, $$\epsilon$$ 이라는 기호를 추가적으로 두어 특징 벡터가 $$n$$개의 라벨 중 관련있는 값이 없으면 의미 없는 라벨로 출력하기 위해서 사용된다.
+> * 최종 결과는 중복해서 나타나는 값들은 하나로 합치고 $$\epsilon$$ 은 삭제한 값이 된다.
+> * time $$t$$ 에서 CTC가 적용된 output layer의 loss function은 다음과 같다.
+>
+> $$
+> LF(X,y)=-lnP(y|X)=-ln\sum_{s=1}^{os^*}\alpha(t,s)\beta(t,s)
+> $$
+>
+> > 여기에서 $$y$$는 time $$t$$ 까지 생성될 수 있는 output sequence $$os^{*}$$ 에 대해서 함수 $$E$$를 취한 $$L$$의 sub-label sequence이다.
+> >
+> > $$s$$는 output layer를 구성하는 output node의 index 정보이다.
+> >
+> > $$α​$$는 forward variable로, $$L​$$의 $$s/2​$$ 만큼의 prefix와 대응되는 time $$0​$$부터 time $$t​$$ 까지의 모든 sequence에 대한 확률들의 합이다.
+> >
+> > $$β$$는 backward variable로, $$α$$를 통해서 구한 path가 있을 때, time ($$t+1$$)부터 $$|L|$$ 까지의 모든 sequence에 대한 확률들의 합이다.
+> >
+> > $$α$$와 $$β$$를 계산하기 위하여 forward-backward 알고리즘을 사용한다.
+>
+> 참조: [Sequence Modeling with CTC](https://distill.pub/2017/ctc/) / [LSTM RNN-based Korean Speech Recognition System Using CTC](http://dx.doi.org/10.9728/dcs.2017.18.1.93) / [Connectionist Temporal Classification: Labelling Unsegmented Sequence Data with Recurrent Neural Networks](http://www.cs.toronto.edu/~graves/icml_2006.pdf)
+
 <br />
+
+---
 
 ## 3.2 케라스 소개
 
@@ -88,8 +139,6 @@ model.add(layers.Dense(10))
 
 ### 3.2.1 케라스, 텐서플로, 씨아노, CNTK
 
----
-
 * 케라스는 텐서 조작이나, 미분 같은 저수준의 연산은 다루지 않는다.
   * 하지만 **백엔드 엔진**에서 제공하는 텐서 라이브러리를 통해서 사용 가능하다.
   * 케라스는 모듈 구조로 구성되어 여러 가지 백엔드 엔진을 자유롭게 사용할 수 있다.
@@ -104,8 +153,6 @@ model.add(layers.Dense(10))
 
 ### 3.2.2 케라스를 사용한 개발: 빠르게 둘러보기
 
----
-
 케라스를 활용한 대부분의 작업 흐름은 다음과 같다.
 
 1. 입력 텐서와 타깃 텐서로 이루어진 훈련 데이터를 정의한다.
@@ -115,14 +162,14 @@ model.add(layers.Dense(10))
 
 <br />
 
-MNIST 데이터 셋을 이용한 신경망 예제를 통해서 살펴보자. 자세한 코드는 **Jupyter Notebook** 참고 → [[링크](http://nbviewer.jupyter.org/github/ExcelsiorCJH/Deep-Learning-with-Python/blob/master/Chap02-mathematical_building_blocks_of_neural_networks/Chap02-mathematical_building_blocks_of_neural_networks.ipynb#2.1.1-MNIST-%EB%B6%84%EB%A5%98%EA%B8%B0-%EA%B5%AC%ED%98%84)]
+MNIST 데이터셋을 이용한 신경망 예제를 통해서 살펴보자. 자세한 코드는 **Jupyter Notebook** 참고 → [[링크](http://nbviewer.jupyter.org/github/ExcelsiorCJH/Deep-Learning-with-Python/blob/master/Chap02-mathematical_building_blocks_of_neural_networks/Chap02-mathematical_building_blocks_of_neural_networks.ipynb#2.1.1-MNIST-%EB%B6%84%EB%A5%98%EA%B8%B0-%EA%B5%AC%ED%98%84)]
 
 1. 입력 텐서와 타깃 텐서로 이루어진 훈련 데이터를 정의한다.
 
-```python
-from keras.datasets import mnist
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
-```
+   ```python
+   from keras.datasets import mnist
+   (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+   ```
 
 2. 입력과 타깃을 매핑하는 층으로 이루어진 네트워크(또는 모델)를 정의한다.
 
@@ -162,7 +209,7 @@ from keras.datasets import mnist
    ```
 
    * 여기에 쓰인 `categorical_crossentropy`는 손실 함수이고 이는 가중치 텐서를 학습하기 위한 피드백 신호로 사용되며 훈련하는 동안 최소화된다.
-   * 그리고 미니 배치 확률적 경사 하강법을 통해 손실이 감소되는데. 경사 하강법을 적용하는 구체적인 방식은 첫 번째 매개변수로 전달된 `rmsprop` 옵티마이저에 의해 결정된다.
+   * 그리고 미니 배치 확률적 경사 하강법을 통해 손실이 감소되는데, 경사 하강법을 적용하는 구체적인 방식은 첫 번째 매개변수로 전달된 `rmsprop` 옵티마이저에 의해 결정된다.
 
 4. 훈련 데이터에 대해 모델의 `fit()` 메서드를 반복적으로 호출한다.
 
