@@ -111,9 +111,9 @@ model.add(layers.Dense(10))
 > >
 > > $$s$$는 output layer를 구성하는 output node의 index 정보이다.
 > >
-> > $$α​$$는 forward variable로, $$L​$$의 $$s/2​$$ 만큼의 prefix와 대응되는 time $$0​$$부터 time $$t​$$ 까지의 모든 sequence에 대한 확률들의 합이다.
+> > $$α$$는 forward variable로, $$L$$의 $$s/2$$ 만큼의 prefix와 대응되는 time $$0$$부터 time $$t$$ 까지의 모든 sequence에 대한 확률들의 합이다.
 > >
-> > $$β$$는 backward variable로, $$α$$를 통해서 구한 path가 있을 때, time ($$t+1$$)부터 $$|L|$$ 까지의 모든 sequence에 대한 확률들의 합이다.
+> > $$β​$$는 backward variable로, $$α​$$를 통해서 구한 path가 있을 때, time ($$t+1​$$)부터 $$|L|​$$ 까지의 모든 sequence에 대한 확률들의 합이다.
 > >
 > > $$α$$와 $$β$$를 계산하기 위하여 forward-backward 알고리즘을 사용한다.
 >
@@ -220,3 +220,18 @@ MNIST 데이터셋을 이용한 신경망 예제를 통해서 살펴보자. 자�
    * `fit()` 메서드를 호출하면 네트워크가 128개 샘플씩 미니 배치로 훈련 데이터를 다섯 번 반복한다.
    * 각 반복마다 네트워크가 배치에서 손실에 대한 가중치의 그래디언트를 계산하고, 그에 맞추어 가중치를 업데이트한다.
 
+<br />
+
+---
+
+## 3.4 영화 리뷰 분류: 이진 분류 문제
+
+* **Jupyter Notebook** 보기 → [[링크](http://nbviewer.jupyter.org/github/cyc1am3n/Deep-Learning-with-Python/blob/master/Chap03-getting_started_with_neural_networks/Chap03-4-classifying_movie_reviews.ipynb)]
+
+<br />
+
+---
+
+## 3.5 뉴스 기사 분류: 다중 분류 문제
+
+* **Jupyter Notebook** 보기 → [[링크](http://nbviewer.jupyter.org/github/cyc1am3n/Deep-Learning-with-Python/blob/master/Chap03-getting_started_with_neural_networks/Chap03-5-classifying_newswires.ipynb)]
